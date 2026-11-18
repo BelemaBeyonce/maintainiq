@@ -1,0 +1,2178 @@
+openapi: 3.0.3
+info:
+  title: MaintainIQ — Foundation API
+  version: 0.1.0
+  description: Milestone 1 only. Synthetic demo data; no operational safety approval
+    or AI predictions.
+paths:
+  /api/assets/:
+    get:
+      operationId: assets_list
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - assets
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAssetList'
+          description: ''
+    post:
+      operationId: assets_create
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - assets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AssetRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+          description: ''
+  /api/assets/{id}/:
+    get:
+      operationId: assets_retrieve
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this asset.
+        required: true
+      tags:
+      - assets
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+          description: ''
+    put:
+      operationId: assets_update
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this asset.
+        required: true
+      tags:
+      - assets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AssetRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+          description: ''
+    patch:
+      operationId: assets_partial_update
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this asset.
+        required: true
+      tags:
+      - assets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAssetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAssetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAssetRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+          description: ''
+    delete:
+      operationId: assets_destroy
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this asset.
+        required: true
+      tags:
+      - assets
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/assets/{id}/history/:
+    get:
+      operationId: assets_history_retrieve
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this asset.
+        required: true
+      tags:
+      - assets
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+          description: ''
+  /api/assets/export/:
+    get:
+      operationId: assets_export_retrieve
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - assets
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+          description: ''
+  /api/audit-events/:
+    get:
+      operationId: audit_events_list
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - audit-events
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditList'
+          description: ''
+  /api/audit-events/{id}/:
+    get:
+      operationId: audit_events_retrieve
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this audit event.
+        required: true
+      tags:
+      - audit-events
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audit'
+          description: ''
+  /api/auth/context/:
+    get:
+      operationId: auth_context_retrieve
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/auth/csrf/:
+    get:
+      operationId: auth_csrf_retrieve
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/auth/invitations/accept/:
+    post:
+      operationId: auth_invitations_accept_create
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AcceptInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AcceptInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/auth/invitations/inspect/:
+    post:
+      operationId: auth_invitations_inspect_create
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/auth/login/:
+    post:
+      operationId: auth_login_create
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/auth/logout/:
+    post:
+      operationId: auth_logout_create
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/auth/password-reset/:
+    post:
+      operationId: auth_password_reset_create
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetRequestInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResetRequestInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResetRequestInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/auth/password-reset/confirm/:
+    post:
+      operationId: auth_password_reset_confirm_create
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetConfirmInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResetConfirmInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResetConfirmInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/categories/:
+    get:
+      operationId: categories_list
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - categories
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategoryList'
+          description: ''
+    post:
+      operationId: categories_create
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+  /api/categories/{id}/:
+    get:
+      operationId: categories_retrieve
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this asset category.
+        required: true
+      tags:
+      - categories
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    put:
+      operationId: categories_update
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this asset category.
+        required: true
+      tags:
+      - categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    patch:
+      operationId: categories_partial_update
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this asset category.
+        required: true
+      tags:
+      - categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoryRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+  /api/dashboard/:
+    get:
+      operationId: dashboard_retrieve
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - dashboard
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/health/:
+    get:
+      operationId: health_retrieve
+      tags:
+      - health
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '503':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/invitations/:
+    post:
+      operationId: invitations_create
+      parameters:
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - invitations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InviteInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InviteInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/locations/:
+    get:
+      operationId: locations_list
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - locations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLocationList'
+          description: ''
+    post:
+      operationId: locations_create
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - locations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+  /api/locations/{id}/:
+    get:
+      operationId: locations_retrieve
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this functional location.
+        required: true
+      tags:
+      - locations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+    put:
+      operationId: locations_update
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this functional location.
+        required: true
+      tags:
+      - locations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+    patch:
+      operationId: locations_partial_update
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this functional location.
+        required: true
+      tags:
+      - locations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+  /api/memberships/:
+    get:
+      operationId: memberships_retrieve
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - memberships
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/memberships/{id}/:
+    patch:
+      operationId: memberships_partial_update
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - memberships
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMembershipInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMembershipInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMembershipInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/organization/:
+    get:
+      operationId: organization_retrieve
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organization
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+    patch:
+      operationId: organization_partial_update
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - organization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizationInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/sites/:
+    get:
+      operationId: sites_list
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - sites
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSiteList'
+          description: ''
+    post:
+      operationId: sites_create
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - sites
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SiteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SiteRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+          description: ''
+  /api/sites/{id}/:
+    get:
+      operationId: sites_retrieve
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this site.
+        required: true
+      tags:
+      - sites
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+          description: ''
+    put:
+      operationId: sites_update
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this site.
+        required: true
+      tags:
+      - sites
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SiteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SiteRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+          description: ''
+    patch:
+      operationId: sites_partial_update
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        description: For mutations, use the token returned by GET /api/auth/csrf/;
+          session cookies are sent by the same-origin browser.
+      - in: header
+        name: X-Tenant-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this site.
+        required: true
+      tags:
+      - sites
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSiteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSiteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSiteRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+          description: ''
+components:
+  schemas:
+    AcceptInputRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          minLength: 40
+          maxLength: 100
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 12
+          maxLength: 128
+      required:
+      - full_name
+      - password
+      - token
+    Asset:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        site_id:
+          type: string
+          format: uuid
+        site_name:
+          type: string
+          readOnly: true
+        category_id:
+          type: string
+          format: uuid
+        category_name:
+          type: string
+          readOnly: true
+        functional_location_id:
+          type: string
+          format: uuid
+          nullable: true
+        location_code:
+          type: string
+          readOnly: true
+          default: ''
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        tag:
+          type: string
+          maxLength: 60
+        name:
+          type: string
+          maxLength: 160
+        manufacturer:
+          type: string
+          maxLength: 100
+        model:
+          type: string
+          maxLength: 100
+        serial_number:
+          type: string
+          maxLength: 120
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        criticality:
+          $ref: '#/components/schemas/CriticalityEnum'
+        description:
+          type: string
+          maxLength: 5000
+        is_synthetic:
+          type: boolean
+          readOnly: true
+        archived_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - archived_at
+      - category_id
+      - category_name
+      - created_at
+      - id
+      - is_synthetic
+      - location_code
+      - name
+      - site_id
+      - site_name
+      - tag
+      - updated_at
+    AssetRequest:
+      type: object
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        category_id:
+          type: string
+          format: uuid
+        functional_location_id:
+          type: string
+          format: uuid
+          nullable: true
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        tag:
+          type: string
+          minLength: 1
+          maxLength: 60
+        name:
+          type: string
+          minLength: 1
+          maxLength: 160
+        manufacturer:
+          type: string
+          maxLength: 100
+        model:
+          type: string
+          maxLength: 100
+        serial_number:
+          type: string
+          maxLength: 120
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        criticality:
+          $ref: '#/components/schemas/CriticalityEnum'
+        description:
+          type: string
+          maxLength: 5000
+      required:
+      - category_id
+      - name
+      - site_id
+      - tag
+    Audit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        actor_name:
+          type: string
+          default: System
+        action:
+          type: string
+          maxLength: 40
+        entity_type:
+          type: string
+          maxLength: 40
+        object_id:
+          type: string
+          format: uuid
+        before: {}
+        after: {}
+        timestamp:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - action
+      - entity_type
+      - id
+      - object_id
+      - site_id
+      - timestamp
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 100
+      required:
+      - code
+      - id
+      - name
+    CategoryRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - code
+      - name
+    CriticalityEnum:
+      enum:
+      - low
+      - medium
+      - high
+      - critical
+      type: string
+      description: |-
+        * `low` - Low
+        * `medium` - Medium
+        * `high` - High
+        * `critical` - Critical
+    InviteInputRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        site_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+      required:
+      - email
+      - role
+      - site_ids
+    Location:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        site_id:
+          type: string
+          format: uuid
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        code:
+          type: string
+          maxLength: 60
+        name:
+          type: string
+          maxLength: 160
+      required:
+      - code
+      - id
+      - name
+      - site_id
+    LocationRequest:
+      type: object
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        code:
+          type: string
+          minLength: 1
+          maxLength: 60
+        name:
+          type: string
+          minLength: 1
+          maxLength: 160
+      required:
+      - code
+      - name
+      - site_id
+    LoginInputRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+      required:
+      - email
+      - password
+    PaginatedAssetList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Asset'
+    PaginatedAuditList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Audit'
+    PaginatedCategoryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    PaginatedLocationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+    PaginatedSiteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Site'
+    PatchedAssetRequest:
+      type: object
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        category_id:
+          type: string
+          format: uuid
+        functional_location_id:
+          type: string
+          format: uuid
+          nullable: true
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        tag:
+          type: string
+          minLength: 1
+          maxLength: 60
+        name:
+          type: string
+          minLength: 1
+          maxLength: 160
+        manufacturer:
+          type: string
+          maxLength: 100
+        model:
+          type: string
+          maxLength: 100
+        serial_number:
+          type: string
+          maxLength: 120
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        criticality:
+          $ref: '#/components/schemas/CriticalityEnum'
+        description:
+          type: string
+          maxLength: 5000
+    PatchedCategoryRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+    PatchedLocationRequest:
+      type: object
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        code:
+          type: string
+          minLength: 1
+          maxLength: 60
+        name:
+          type: string
+          minLength: 1
+          maxLength: 160
+    PatchedMembershipInputRequest:
+      type: object
+      properties:
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        site_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        is_active:
+          type: boolean
+          default: true
+    PatchedOrganizationInputRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 160
+        timezone:
+          type: string
+          minLength: 1
+          maxLength: 80
+        currency:
+          type: string
+          minLength: 1
+          pattern: ^[A-Z]{3}$
+    PatchedSiteRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        name:
+          type: string
+          minLength: 1
+          maxLength: 160
+    ResetConfirmInputRequest:
+      type: object
+      properties:
+        uid:
+          type: string
+          minLength: 1
+          maxLength: 100
+        token:
+          type: string
+          minLength: 1
+          maxLength: 100
+        password:
+          type: string
+          writeOnly: true
+          minLength: 12
+          maxLength: 128
+      required:
+      - password
+      - token
+      - uid
+    ResetRequestInputRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+      required:
+      - email
+    RoleEnum:
+      enum:
+      - admin
+      - manager
+      - engineer
+      - technician
+      - requester
+      - auditor
+      type: string
+      description: |-
+        * `admin` - admin
+        * `manager` - manager
+        * `engineer` - engineer
+        * `technician` - technician
+        * `requester` - requester
+        * `auditor` - auditor
+    Site:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          maxLength: 40
+        name:
+          type: string
+          maxLength: 160
+        is_synthetic:
+          type: boolean
+          readOnly: true
+      required:
+      - code
+      - id
+      - is_synthetic
+      - name
+    SiteRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        name:
+          type: string
+          minLength: 1
+          maxLength: 160
+      required:
+      - code
+      - name
+    StatusEnum:
+      enum:
+      - active
+      - standby
+      - out_of_service
+      type: string
+      description: |-
+        * `active` - Active
+        * `standby` - Standby
+        * `out_of_service` - Out of service
+    TokenInputRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          minLength: 40
+          maxLength: 100
+      required:
+      - token
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

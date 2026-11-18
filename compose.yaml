@@ -1,0 +1,64 @@
+name: maintainiq
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-maintainiq}
+      POSTGRES_USER: ${POSTGRES_USER:-maintainiq}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run python infra/dev.py up first}
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: ["redis-data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports: ["127.0.0.1:8025:8025"]
+  backend:
+    build:
+      context: .
+      dockerfile: infra/backend.Dockerfile
+    env_file: .env
+    volumes: ["private-data:/data"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      mailpit: {condition: service_started}
+  worker:
+    build:
+      context: .
+      dockerfile: infra/backend.Dockerfile
+    command: ["celery", "-A", "config.celery:app", "worker", "--loglevel=WARNING", "--concurrency=1"]
+    healthcheck:
+      test: ["CMD", "celery", "-A", "config.celery:app", "inspect", "ping", "--timeout", "3"]
+      interval: 15s
+      timeout: 8s
+      start_period: 30s
+      retries: 10
+    env_file: .env
+    volumes: ["private-data:/data"]
+    depends_on:
+      backend: {condition: service_healthy}
+  frontend:
+    build:
+      context: frontend
+      dockerfile: ../infra/frontend.Dockerfile
+      args:
+        BACKEND_INTERNAL_URL: http://backend:8000
+    ports: ["127.0.0.1:3000:3000"]
+    depends_on:
+      backend: {condition: service_healthy}
+volumes:
+  postgres-data:
+  redis-data:
+  private-data:

@@ -1,0 +1,98 @@
+name: Milestone 1 checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: maintainiq
+          POSTGRES_DB: maintainiq
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U maintainiq -d maintainiq"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: postgresql://maintainiq@localhost:5432/maintainiq
+      DJANGO_SETTINGS_MODULE: config.test_settings
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.lock
+      - run: python -m pip install -r requirements-dev.lock
+      - run: ruff check . ../infra && ruff format --check . ../infra
+      - run: python manage.py check && python manage.py migrate --noinput && python manage.py makemigrations --check --dry-run
+      - run: python manage.py spectacular --file ../docs/openapi-ci.yaml --validate --fail-on-warn
+      - run: pytest --cov=core --cov-report=term-missing --cov-report=xml --cov-fail-under=90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage.xml
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint && npm run format:check && npm run typecheck && npm test
+      - run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+  compose-acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Start the actual Docker Compose application
+        run: python infra/dev.py up
+      - name: Collect private synthetic credentials
+        run: |
+          docker compose exec -T backend cat /data/demo-credentials.json > "$RUNNER_TEMP/maintainiq-demo-credentials.json"
+          chmod 600 "$RUNNER_TEMP/maintainiq-demo-credentials.json"
+          docker compose exec -T backend python manage.py migrate --check
+          docker compose exec -T backend python manage.py makemigrations --check --dry-run
+      - run: npm ci && npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Real-browser acceptance against containers
+        run: npm run test:e2e
+        working-directory: frontend
+        env:
+          DEMO_CREDENTIALS_FILE: ${{ runner.temp }}/maintainiq-demo-credentials.json
+          BASE_URL: http://localhost:3000
+      - name: Non-root runtime and worker checks
+        run: |
+          docker compose exec -T backend id
+          docker compose exec -T frontend id
+          docker compose exec -T worker celery -A config.celery:app inspect ping --timeout 10
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: acceptance-screenshots
+          path: docs/screenshots/
+      - name: Stop disposable CI services
+        if: always()
+        run: docker compose down -v
